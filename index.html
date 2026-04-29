@@ -252,12 +252,12 @@
         blockquote::before { content: '"'; font-size: 4rem; color: var(--border-subtle); position: absolute; top: -1.5rem; left: 50%; transform: translateX(-50%); z-index: -1; }
 
         /* MAPS */
-        .map-container { margin: 3rem 0; text-align: center; }
+        .map-container { margin: 2.5rem auto; text-align: center; max-width: 420px; }
         .map-img {
             width: 100%; max-width: 100%; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md); transition: transform 0.4s ease; display: block;
+            box-shadow: var(--shadow-sm); transition: transform 0.4s ease; display: block;
         }
-        .map-img:hover { transform: scale(1.02); box-shadow: var(--shadow-lg); }
+        .map-img:hover { transform: scale(1.02); box-shadow: var(--shadow-md); }
 
         /* TOOLTIPS (TERMS) */
         .term {
@@ -268,27 +268,27 @@
         .term:hover { color: var(--text-main); text-decoration-color: var(--accent-teal); }
         .term-tooltip {
             position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%) translateY(10px);
-            background: rgba(17, 19, 21, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            background: rgba(17, 19, 21, 0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             color: #EDEDED; font-size: 0.9rem; padding: 1rem 1.25rem; border-radius: var(--radius-md);
-            width: 280px; line-height: 1.6; pointer-events: none; opacity: 0; transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+            max-width: 280px; width: max-content; line-height: 1.6; pointer-events: none; opacity: 0; transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
             z-index: 50; font-style: normal; font-family: var(--font-serif); font-weight: 400; box-shadow: var(--shadow-lg); border: 1px solid rgba(255,255,255,0.1);
         }
-        .term-tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: rgba(17, 19, 21, 0.85); }
+        .term-tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: rgba(17, 19, 21, 0.92); }
         .term:hover .term-tooltip { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        /* GLOSSARY FLASHCARDS */
-        .glossary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; margin: 2rem 0; }
-        .flashcard { perspective: 1000px; cursor: pointer; height: 240px; }
-        .flashcard-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
-        .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
-        .flashcard-front, .flashcard-back {
-            position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: var(--radius-lg);
-            padding: 2rem; background: var(--bg-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);
-            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+        /* TIMELINE TOGGLE */
+        .timeline-toggle {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            color: var(--text-muted); padding: 0.7rem 1.4rem; border-radius: 30px;
+            cursor: pointer; font-family: var(--font-mono); font-size: 0.85rem;
+            transition: all 0.25s ease; margin-bottom: 1.5rem;
         }
-        .flashcard-front { color: var(--text-main); font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; }
-        .flashcard-front::after { content: 'Clicca per scoprire'; position: absolute; bottom: 1.5rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase; }
-        .flashcard-back { transform: rotateY(180deg); background: var(--bg-sidebar); color: var(--text-muted); font-size: 1.05rem; }
+        .timeline-toggle:hover { border-color: var(--accent-gold); color: var(--text-main); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+        .timeline-toggle .arrow { transition: transform 0.3s ease; display: inline-block; }
+        .timeline-toggle.open .arrow { transform: rotate(180deg); }
+        .timeline-collapsible { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .timeline-collapsible.open { max-height: 5000px; }
 
         /* TIMELINE */
         #timeline-filters { display: flex; gap: 0.75rem; margin: 2rem 0; flex-wrap: wrap; }
@@ -387,6 +387,16 @@
         .scroll-top:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 
         /* RESPONSIVE */
+        /* Mobile overlay to close sidebar on tap outside */
+        .nav-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 99;
+        }
+        .nav-overlay.show { display: block; }
+
         @media (max-width: 1000px) {
             nav { transform: translateX(-100%); }
             nav.open { transform: translateX(0); box-shadow: var(--shadow-lg); }
@@ -400,6 +410,59 @@
             .quiz-options { grid-template-columns: 1fr; }
             .hero-stats { flex-wrap: wrap; gap: 2rem; margin-top: 3rem; }
             #settings-bar { top: 1rem; right: 1rem; }
+            .term-tooltip { left: 0; right: 0; transform: translateX(0) translateY(10px); max-width: none; width: auto; position: fixed; bottom: auto; top: auto; margin: 0 1rem; }
+            .term:hover .term-tooltip { transform: translateX(0) translateY(0); }
+            .term-tooltip::after { display: none; }
+        }
+        
+        @media (max-width: 600px) {
+            body.font-normal { font-size: 17px; }
+            body.font-large { font-size: 20px; }
+            nav { width: 85vw; max-width: 300px; }
+            .content { padding: 0 1rem; }
+            .hero { padding: 4rem 1rem 2.5rem; }
+            .hero h1 { font-size: 2rem; line-height: 1.2; }
+            .hero-desc { font-size: 1rem; }
+            .hero-stats { gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
+            .hero-stats > div { flex: 0 0 40%; text-align: center; }
+            .hero-stat-num { font-size: 1.8rem; }
+            .hero-stat-label { font-size: 0.65rem; }
+            .drop-cap::first-letter { font-size: 3.2rem; }
+            .chapter { padding: 2.5rem 0; }
+            h2 { font-size: 1.6rem; }
+            h3 { font-size: 1.2rem; }
+            .chapter-number { font-size: 0.7rem; }
+            .quiz-section { padding: 2rem 1rem; border-width: 1px; margin: 2rem 0; }
+            .quiz-section::before { left: 1rem; font-size: 0.65rem; top: -10px; letter-spacing: 0.12em; }
+            .quiz-title { font-size: 1.6rem; }
+            .quiz-sub { font-size: 0.95rem; margin-bottom: 2rem; }
+            .quiz-q-text { font-size: 1.05rem; }
+            .quiz-option { padding: 1rem; font-size: 0.95rem; }
+            .quiz-option:hover:not(.answered) { transform: none; }
+            .chapter-questions { padding: 1.2rem; margin-bottom: 1.5rem; border-top-width: 3px; }
+            .chapter-questions h4 { font-size: 1.1rem; }
+            .persona-card { flex-direction: column; gap: 1rem; padding: 1.2rem; text-align: center; }
+            .persona-avatar { margin: 0 auto; width: 56px; height: 56px; min-width: 56px; font-size: 1.2rem; }
+            .persona-name { font-size: 1.1rem; }
+            .callout { padding: 1.2rem 1rem; margin: 1.5rem 0; }
+            .callout p { font-size: 0.95rem; }
+            .glossary-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .flashcard { height: 200px; }
+            .flashcard-front { font-size: 1.2rem; padding: 1.5rem; }
+            .flashcard-back { font-size: 0.95rem; padding: 1.5rem; }
+            .badges-wrap { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+            .badge { padding: 1rem; }
+            .badge-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+            .badge-title { font-size: 0.95rem; }
+            .badge-desc { font-size: 0.75rem; }
+            #settings-bar { top: 0.5rem; right: 0.5rem; gap: 0.4rem; }
+            #settings-bar button { padding: 0.4rem 0.7rem; font-size: 0.65rem; }
+            .scroll-top { width: 42px; height: 42px; font-size: 1rem; right: 0.75rem; bottom: 0.75rem; }
+            .nav-toggle { bottom: 0.75rem; left: 0.75rem; padding: 0.6rem 0.9rem; font-size: 0.85rem; }
+            blockquote { font-size: 1.1rem; padding: 0 0.5rem; margin: 1.5rem 0; }
+            blockquote::before { font-size: 3rem; top: -1rem; }
+            .map-container { margin: 2rem 0; }
+            ul { margin-left: 1.2rem; }
         }
 
 </style>
@@ -425,24 +488,42 @@
                 <div class="progress-bar-nav">
                     <div class="progress-bar-nav-fill" id="navProgress"></div>
                 </div>
-                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--ink-faint); margin-top: 0.4rem;"
+                <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-faint); margin-top: 0.4rem;"
                     id="progressLabel">Inizio lettura</div>
             </div>
         </div>
         
         <div style="padding: 0 1.5rem 1rem;">
-            <input type="text" id="global-search" placeholder="Cerca capitoli o termini..." style="width:100%; padding: 0.6rem; border-radius: 4px; border: 1px solid var(--ink-faint); background: var(--parchment); color: var(--ink); font-family: 'Crimson Pro', serif; font-size: 0.85rem; outline: none; transition: box-shadow 0.2s;">
+            <input type="text" id="global-search" placeholder="Cerca capitoli o termini...">
         </div>
 
         <div id="nav-links"></div>
         
         <div class="nav-section-label">Riferimento</div>
         <a href="#cronologia">Cronologia</a>
-        <a href="#glossario">Glossario</a>
         <a href="#quiz">Mettiti alla Prova</a>
     </nav>
 
-    <button class="nav-toggle" id="navToggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰ Indice</button>
+    <div class="nav-overlay" id="navOverlay"></div>
+    <button class="nav-toggle" id="navToggle">☰ Indice</button>
+
+    <script>
+        // Sidebar toggle with overlay
+        const _sidebar = document.getElementById('sidebar');
+        const _overlay = document.getElementById('navOverlay');
+        const _navToggle = document.getElementById('navToggle');
+        
+        function toggleSidebar() {
+            _sidebar.classList.toggle('open');
+            _overlay.classList.toggle('show', _sidebar.classList.contains('open'));
+        }
+        function closeSidebar() {
+            _sidebar.classList.remove('open');
+            _overlay.classList.remove('show');
+        }
+        _navToggle.addEventListener('click', toggleSidebar);
+        _overlay.addEventListener('click', closeSidebar);
+    </script>
 
     <main>
         <!-- HERO -->
@@ -490,26 +571,21 @@
                 <div class="chapter-number">Riferimento</div>
                 <h2>Cronologia di Riferimento Completa</h2>
                 
-                <div id="timeline-filters">
-                    <button class="tl-filter active" data-century="Tutti">Tutti</button>
-                    <button class="tl-filter" data-century="XIII">XIII sec.</button>
-                    <button class="tl-filter" data-century="XIV">XIV sec.</button>
-                    <button class="tl-filter" data-century="XV">XV sec.</button>
-                    <button class="tl-filter" data-century="XVI">XVI sec.</button>
+                <button class="timeline-toggle" id="timelineToggle">
+                    <span class="arrow">▼</span> Mostra Linea Temporale
+                </button>
+                
+                <div class="timeline-collapsible" id="timelineCollapsible">
+                    <div id="timeline-filters">
+                        <button class="tl-filter active" data-century="Tutti">Tutti</button>
+                        <button class="tl-filter" data-century="XIII">XIII sec.</button>
+                        <button class="tl-filter" data-century="XIV">XIV sec.</button>
+                        <button class="tl-filter" data-century="XV">XV sec.</button>
+                        <button class="tl-filter" data-century="XVI">XVI sec.</button>
+                    </div>
+                    
+                    <div id="timeline-list" class="timeline"></div>
                 </div>
-                
-                <div id="timeline-list" class="timeline"></div>
-            </section>
-
-            <!-- GLOSSARIO (Flashcards) -->
-            <section class="chapter" id="glossario">
-                <div class="chapter-number">Riferimento</div>
-                <h2>Glossario Interattivo</h2>
-                <p style="margin-bottom: 1.5rem; color: var(--ink-light); font-style: italic; font-size: 0.95rem;">Cerca i termini e clicca sulle Flashcards per scoprire la definizione.</p>
-                
-                <input type="text" id="glossary-search" placeholder="Cerca un termine...">
-                
-                <div id="glossary-grid" class="glossary-grid"></div>
             </section>
 
             <!-- QUIZ & RIPASSO -->
@@ -523,12 +599,12 @@
                 <h3 style="margin-top: 4rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; color: var(--accent-gold); font-family: var(--font-display);">Fase 2: Quiz a Scelta Multipla</h3>
                 <div id="quiz-container" style="margin-top: 2rem;"></div>
                 
-                <div id="quiz-score" style="display:none; margin-top: 1.5rem; padding: 1rem 1.25rem; background: rgba(245,239,216,0.08); border: 1px solid rgba(245,239,216,0.15); border-radius: 4px; font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--parchment);"></div>
+                <div id="quiz-score" style="display:none; margin-top: 1.5rem; padding: 1rem 1.25rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); font-family: var(--font-display); font-size: 1.1rem; color: var(--text-main);"></div>
             </div>
 
             <!-- FOOTER -->
-            <div style="padding: 3rem 0 4rem; text-align: center; color: var(--ink-faint); font-size: 0.85rem; font-style: italic; border-top: 1px solid var(--parchment-deep); margin-top: 2rem;">
-                <div style="font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--ink-light); margin-bottom: 0.5rem;">
+            <div style="padding: 3rem 0 4rem; text-align: center; color: var(--text-faint); font-size: 0.85rem; font-style: italic; border-top: 1px solid var(--border-subtle); margin-top: 2rem;">
+                <div style="font-family: var(--font-display); font-size: 1rem; color: var(--text-muted); margin-bottom: 0.5rem;">
                     Studio di Storia Medievale e Rinascimentale</div>
                 <div>XIII–XVI secolo · Monarchie, Umanesimo, Scoperte, Riforma</div>
             </div>
@@ -545,7 +621,7 @@
       "id": "s1",
       "number": "01",
       "title": "La Guerra dei Cent'anni (1337–1453)",
-      "content": "<h3>Origini e cause</h3>\n<p class=\"drop-cap\">La Guerra dei Cent'anni fu una delle più lunghe e complicate della storia. Non fu\n                    un'unica battaglia, ma una serie di conflitti durati più di un secolo (dal 1337 al 1453).</p>\n<p>Le cause principali furono:</p>\n<ul>\n<li>Il re d'Inghilterra <strong>Edoardo III</strong> voleva diventare anche re di Francia,\n                        sostenendo di avere il diritto perché sua madre era figlia di un re francese. Nel 1328, alla\n                        morte di Carlo IV di Francia senza figli, scoppiò la crisi per la successione al trono.</li>\n<li>Scontri economici per il controllo del commercio della <span class=\"term\">lana grezza<span class=\"term-tooltip\">La lana appena tolta dalle pecore, non ancora lavorata. Era il\n                                prodotto principale che l'Inghilterra vendeva alle Fiandre.</span></span> nelle\n                        <strong>Fiandre</strong>, zona ricchissima grazie alla produzione di panni di lana pregiata\n                        venduti in tutta Europa.</li>\n<li>La confisca dell'Aquitania nel 1337 diede inizio ufficiale alle ostilità.</li>\n</ul>\n<h3>Le principali battaglie</h3>\n<div class=\"timeline\">\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1340</div>\n<div class=\"timeline-event\">Battaglia navale di Sluys — gli inglesi sconfissero i francesi</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1346</div>\n<div class=\"timeline-event\">Battaglia di Crécy — vittoria inglese grazie agli arcieri</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1348</div>\n<div class=\"timeline-event\">Diffusione della <strong>peste nera</strong> in Europa che colpì\n                            duramente le popolazioni</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1356</div>\n<div class=\"timeline-event\">Battaglia di Poitiers — il re francese Giovanni II venne catturato\n                            dagli inglesi</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1360</div>\n<div class=\"timeline-event\">Pace di Brétigny — firma della pace tra Francia e Inghilterra</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1364–1380</div>\n<div class=\"timeline-event\">Regno di Carlo V in Francia, che avviò una riscossa militare</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1415</div>\n<div class=\"timeline-event\">Battaglia di Azincourt — grave sconfitta francese contro Enrico V\n                        </div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1420</div>\n<div class=\"timeline-event\">Trattato di Troyes — Enrico V d'Inghilterra riconosciuto erede al\n                            trono francese</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1428</div>\n<div class=\"timeline-event\">Inizio dell'assedio inglese alla città di Orléans</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1436</div>\n<div class=\"timeline-event\">Parigi riconquistata dai francesi</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1453</div>\n<div class=\"timeline-event\">Battaglia di Castillon — fine della Guerra dei Cent'anni con la\n                            vittoria francese</div>\n</div>\n</div>\n<h3>La trasformazione del modo di combattere</h3>\n<p>La guerra mostrò che il vecchio modo di combattere stava finendo:</p>\n<ul>\n<li>Gli inglesi usavano l'<strong>arco lungo</strong>, che poteva colpire da lontano e bucare le\n                        armature dei cavalieri francesi</li>\n<li>Nelle fasi finali apparvero le prime <strong>armi da fuoco</strong> e i <strong>cannoni</strong>\n</li>\n<li>I contadini francesi iniziarono a sentirsi \"francesi\" e non più solo sudditi di un piccolo\n                        signore locale</li>\n<li>La cavalleria pesante divenne inutile, gli eserciti diventarono più professionali</li>\n</ul>\n<h3>Giovanna d'Arco</h3>\n<div class=\"persona-card\">\n<div class=\"persona-avatar\" style=\"background: var(--red-accent);\">JA</div>\n<div>\n<div class=\"persona-name\">Giovanna d'Arco</div>\n<div class=\"persona-role\">Eroina nazionale francese · c. 1412–1431</div>\n<p class=\"persona-desc\">Era una ragazza contadina giovanissima che diceva di sentire le voci\n                            degli angeli e dei santi. Convinse il re di Francia a darle un esercito e riuscì a liberare\n                            la città di Orléans dagli inglesi nel <strong>1429</strong>. Carlo VII venne incoronato re a\n                            Reims.</p>\n</div>\n</div>\n<p>Nel 1430 Giovanna d'Arco venne catturata dai Borgognoni e venduta agli inglesi. Nel\n                    <strong>1431</strong> fu arsa sul rogo con l'accusa di <span class=\"term\">eresia<span class=\"term-tooltip\">Un'opinione o un comportamento che va contro le regole ufficiali della\n                            Chiesa.</span></span>. L'accusa di eresia fu usata per poterla condannare a morte.</p>\n<p>Nel <strong>1456</strong> avvenne la sua riabilitazione ufficiale dopo un nuovo processo. Giovanna\n                    d'Arco è diventata il simbolo del coraggio dei francesi che volevano riprendersi la loro terra. La\n                    vittoria nella guerra rese la monarchia francese una delle più forti d'Europa.</p>",
+      "content": "<h3>Il contesto: la nascita delle monarchie nazionali</h3>\n<p>Fra il XIII e il XIV secolo, in Francia e Inghilterra si verificò un graduale processo di <strong>centralizzazione del potere</strong>. I sovrani limitarono l'autonomia dei signori locali e portarono sotto il loro controllo aree su cui prima non avevano potere effettivo. In <strong>Francia</strong> nel <strong>1302</strong> nacquero gli <span class=\"term\">Stati Generali<span class=\"term-tooltip\">Assemblea francese divisa in tre ordini: Clero (I stato), Nobiltà (II stato) e Popolo/Lavoratori (III stato), con funzione consultiva al re.</span></span>, un'assemblea divisa in Clero, Nobiltà e Popolo. In <strong>Inghilterra</strong>, grazie alla <span class=\"term\">Magna Carta<span class=\"term-tooltip\">Documento del 1215 che limitava il potere del re e garantiva diritti ai nobili, base del futuro Parlamento inglese.</span></span> (1215), esisteva già una forma di parlamento.</p>\n<h3>Origini e cause</h3>\n<p class=\"drop-cap\">La Guerra dei Cent'anni fu una delle più lunghe e complicate della storia. Non fu\n                    un'unica battaglia, ma una serie di conflitti durati più di un secolo (dal 1337 al 1453).</p>\n<p>Le cause principali furono:</p>\n<ul>\n<li>Il re d'Inghilterra <strong>Edoardo III</strong> voleva diventare anche re di Francia,\n                        sostenendo di avere il diritto perché sua madre era figlia di un re francese. Nel 1328, alla\n                        morte di Carlo IV di Francia senza figli, scoppiò la crisi per la successione al trono.</li>\n<li>Scontri economici per il controllo del commercio della <span class=\"term\">lana grezza<span class=\"term-tooltip\">La lana appena tolta dalle pecore, non ancora lavorata. Era il\n                                prodotto principale che l'Inghilterra vendeva alle Fiandre.</span></span> nelle\n                        <strong>Fiandre</strong>, zona ricchissima grazie alla produzione di panni di lana pregiata\n                        venduti in tutta Europa.</li>\n<li>La confisca dell'Aquitania nel 1337 diede inizio ufficiale alle ostilità.</li>\n</ul>\n<h3>Le principali battaglie</h3>\n<div class=\"timeline\">\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1340</div>\n<div class=\"timeline-event\">Battaglia navale di Sluys — gli inglesi sconfissero i francesi</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1346</div>\n<div class=\"timeline-event\">Battaglia di Crécy — vittoria inglese grazie agli arcieri</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1348</div>\n<div class=\"timeline-event\">Diffusione della <strong>peste nera</strong> in Europa che colpì\n                            duramente le popolazioni</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1356</div>\n<div class=\"timeline-event\">Battaglia di Poitiers — il re francese Giovanni II venne catturato\n                            dagli inglesi</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1360</div>\n<div class=\"timeline-event\">Pace di Brétigny — firma della pace tra Francia e Inghilterra</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1364–1380</div>\n<div class=\"timeline-event\">Regno di Carlo V in Francia, che avviò una riscossa militare</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1415</div>\n<div class=\"timeline-event\">Battaglia di Azincourt — grave sconfitta francese contro Enrico V\n                        </div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1420</div>\n<div class=\"timeline-event\">Trattato di Troyes — Enrico V d'Inghilterra riconosciuto erede al\n                            trono francese</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1428</div>\n<div class=\"timeline-event\">Inizio dell'assedio inglese alla città di Orléans</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1436</div>\n<div class=\"timeline-event\">Parigi riconquistata dai francesi</div>\n</div>\n<div class=\"timeline-item\">\n<div class=\"timeline-year\">1453</div>\n<div class=\"timeline-event\">Battaglia di Castillon — fine della Guerra dei Cent'anni con la\n                            vittoria francese</div>\n</div>\n</div>\n<h3>La trasformazione del modo di combattere</h3>\n<p>La guerra mostrò che il vecchio modo di combattere stava finendo:</p>\n<ul>\n<li>Gli inglesi usavano l'<strong>arco lungo</strong>, che poteva colpire da lontano e bucare le\n                        armature dei cavalieri francesi</li>\n<li>Nelle fasi finali apparvero le prime <strong>armi da fuoco</strong> e i <strong>cannoni</strong>\n</li>\n<li>I contadini francesi iniziarono a sentirsi \"francesi\" e non più solo sudditi di un piccolo\n                        signore locale</li>\n<li>La cavalleria pesante divenne inutile, gli eserciti diventarono più professionali</li>\n</ul>\n<h3>Giovanna d'Arco</h3>\n<div class=\"persona-card\">\n<div class=\"persona-avatar\" style=\"background: var(--red-accent);\">JA</div>\n<div>\n<div class=\"persona-name\">Giovanna d'Arco</div>\n<div class=\"persona-role\">Eroina nazionale francese · c. 1412–1431</div>\n<p class=\"persona-desc\">Era una ragazza contadina giovanissima che diceva di sentire le voci\n                            degli angeli e dei santi. Convinse il re di Francia a darle un esercito e riuscì a liberare\n                            la città di Orléans dagli inglesi nel <strong>1429</strong>. Carlo VII venne incoronato re a\n                            Reims.</p>\n</div>\n</div>\n<p>Nel 1430 Giovanna d'Arco venne catturata dai Borgognoni e venduta agli inglesi. Nel\n                    <strong>1431</strong> fu arsa sul rogo con l'accusa di <span class=\"term\">eresia<span class=\"term-tooltip\">Un'opinione o un comportamento che va contro le regole ufficiali della\n                            Chiesa.</span></span>. L'accusa di eresia fu usata per poterla condannare a morte.</p>\n<p>Nel <strong>1456</strong> avvenne la sua riabilitazione ufficiale dopo un nuovo processo. Giovanna\n                    d'Arco è diventata il simbolo del coraggio dei francesi che volevano riprendersi la loro terra. La\n                    vittoria nella guerra rese la monarchia francese una delle più forti d'Europa.</p>\n<h3>Il rafforzamento della monarchia francese</h3>\n<p>La guerra generò un forte sentimento di <strong>identità nazionale</strong> tra i francesi. Nel <strong>1438</strong> venne emanata la <span class=\"term\">Prammatica sanzione<span class=\"term-tooltip\">Provvedimento che attribuiva al re di Francia il controllo sulle nomine di tutte le cariche ecclesiastiche.</span></span>, che diede al re il potere di controllare le nomine ecclesiastiche. Il lungo conflitto trasformò la Francia in una vera <strong>monarchia nazionale</strong>.</p>",
       "questions": {
         "open": "Quali furono le principali cause che scatenarono la Guerra dei Cent'anni?",
         "closed": "In quale anno terminò la Guerra dei Cent'anni con la battaglia di Castillon? (A: 1337, B: 1453, C: 1429)"
@@ -555,7 +631,7 @@
       "id": "s2",
       "number": "02",
       "title": "L'Inghilterra e la Guerra delle Due Rose",
-      "content": "<p class=\"drop-cap\">Dopo la fine della Guerra dei Cent'anni, l'Inghilterra fu scossa dalla\n                    <strong>Guerra delle Due Rose</strong> (1455–1485), conflitto tra le casate di Lancaster e York. Nel\n                    <strong>1485</strong> Enrico VII Tudor divenne re d'Inghilterra, ponendo fine alla guerra.</p>\n<div class=\"callout callout-teal\">\n<div class=\"callout-label\">🌹 Simbolo storico</div>\n<p>Il nome \"Guerra delle Due Rose\" deriva dai simboli delle due casate: la rosa bianca per York e la\n                        rosa rossa per Lancaster.</p>\n</div>",
+      "content": "<p class=\"drop-cap\">Dopo la fine della Guerra dei Cent'anni, l'Inghilterra fu scossa dalla\n                    <strong>Guerra delle Due Rose</strong> (1455–1485), conflitto tra le casate di Lancaster e York. Nel\n                    <strong>1485</strong> Enrico VII Tudor divenne re d'Inghilterra, ponendo fine alla guerra.</p>\n<p>La sconfitta nella Guerra dei Cent'anni <strong>indebolì il potere dei re d'Inghilterra</strong>. Molti nobili si ribellarono a re <strong>Enrico VI</strong> (casata dei Lancaster), contrapponendogli il duca <strong>Riccardo di York</strong>. Lo scontro iniziò con la <strong>battaglia di Saint Albans</strong> (1455).</p>\n<p>Enrico VII consolidò il potere sposando <strong>Elisabetta di York</strong>, simbolo della riconciliazione tra le due famiglie. La guerra segnò anche il declino dell'alta nobiltà e l'<strong>ascesa dei ceti borghesi</strong> e della piccola nobiltà (<em>gentry</em>).</p>\n<div class=\"callout callout-teal\">\n<div class=\"callout-label\">🌹 Simbolo storico</div>\n<p>Il nome \"Guerra delle Due Rose\" deriva dai simboli delle due casate: la rosa bianca per York e la\n                        rosa rossa per Lancaster.</p>\n</div>",
       "questions": {
         "open": "Perché il conflitto prese il nome di \"Guerra delle Due Rose\"?",
         "closed": "Quale re salì al trono nel 1485 ponendo fine al conflitto? (A: Enrico V, B: Enrico VII Tudor, C: Riccardo III)"
@@ -565,7 +641,7 @@
       "id": "s3",
       "number": "03",
       "title": "L'Unificazione della Spagna e la Reconquista",
-      "content": "<h3>I Re Cattolici</h3>\n<p class=\"drop-cap\">In Spagna il processo di unificazione fu molto legato alla religione. Per secoli i\n                    regni cristiani avevano cercato di riprendere le terre occupate dai musulmani.</p>\n<p>Nel <strong>1469</strong> il matrimonio tra <strong>Isabella di Castiglia</strong> e\n                    <strong>Ferdinando d'Aragona</strong> unì i due regni più importanti. I due sposi, chiamati i\n                    <em>\"Re Cattolici\"</em>, avviando così l'unione dinastica che prese effettivamente forma nel\n                    <strong>1479</strong>.</p>\n<h3>La conquista di Granada (1492)</h3>\n<p>Nel 1492 i Re Cattolici conquistarono <strong>Granada</strong>, l'ultimo territorio musulmano,\n                    completando la <strong>Reconquista</strong>. Nello stesso anno presero decisioni molto forti per\n                    rendere il regno omogeneo dal punto di vista religioso:</p>\n<ul>\n<li>Espulsero tutti gli ebrei che non volevano convertirsi</li>\n<li>Perseguitarono i musulmani rimasti</li>\n<li>Finanziarono il viaggio di Cristoforo Colombo, che portò alla scoperta di nuove terre e\n                        ricchezze, dando inizio all'età moderna</li>\n</ul>\n<div class=\"callout callout-gold\">\n<div class=\"callout-label\">📅 Anno cruciale — 1492</div>\n<p>Il 1492 è uno degli anni più densi di avvenimenti della storia: conquista di Granada, scoperta\n                        dell'America, espulsione degli ebrei. Tutto nello stesso anno.</p>\n</div>",
+      "content": "<h3>I due regni della penisola iberica</h3>\n<p class=\"drop-cap\">Il <strong>Regno di Castiglia</strong> aveva un'economia agricola e pastorale, dominato dall'aristocrazia. Il <strong>Regno di Aragona</strong> aveva invece una forte <strong>vocazione marittima e commerciale</strong>: controllava le Baleari, la Corsica, la Sardegna, la Sicilia e dal 1442 anche il Regno di Napoli.</p>\n<h3>I Re Cattolici</h3>\n<p>In Spagna il processo di unificazione fu molto legato alla religione. Per secoli i\n                    regni cristiani avevano cercato di riprendere le terre occupate dai musulmani.</p>\n<p>Nel <strong>1469</strong> il matrimonio tra <strong>Isabella di Castiglia</strong> e\n                    <strong>Ferdinando d'Aragona</strong> unì i due regni più importanti. I due sposi, chiamati i\n                    <em>\"Re Cattolici\"</em>, avviando così l'unione dinastica che prese effettivamente forma nel\n                    <strong>1479</strong>.</p>\n<h3>La conquista di Granada (1492)</h3>\n<p>Nel 1492 i Re Cattolici conquistarono <strong>Granada</strong>, l'ultimo territorio musulmano,\n                    completando la <strong>Reconquista</strong>. Nello stesso anno presero decisioni molto forti per\n                    rendere il regno omogeneo dal punto di vista religioso:</p>\n<ul>\n<li>Espulsero in massa oltre <strong>100.000 ebrei</strong> che non volevano convertirsi (l'ostilità verso di loro era cresciuta già dalla peste nera del 1348)</li>\n<li>Perseguitarono i musulmani rimasti</li>\n<li>Finanziarono il viaggio di Cristoforo Colombo, che portò alla scoperta di nuove terre e\n                        ricchezze, dando inizio all'età moderna</li>\n</ul>\n<div class=\"callout callout-gold\">\n<div class=\"callout-label\">📅 Anno cruciale — 1492</div>\n<p>Il 1492 è uno degli anni più densi di avvenimenti della storia: conquista di Granada, scoperta\n                        dell'America, espulsione degli ebrei. Tutto nello stesso anno.</p>\n</div>",
       "questions": {
         "open": "Quali furono le decisioni prese dai Re Cattolici nel 1492 per omogeneizzare il regno dal punto di vista religioso?",
         "closed": "Chi finanziarono i Re Cattolici nel 1492 per il suo viaggio di esplorazione? (A: Amerigo Vespucci, B: Ferdinando Magellano, C: Cristoforo Colombo)"
@@ -575,7 +651,7 @@
       "id": "s4",
       "number": "04",
       "title": "Umanesimo e Rinascimento",
-      "content": "<h3>Il pensiero umanistico</h3>\n<p class=\"drop-cap\">Mentre i re unificavano i territori, gli studiosi e gli artisti rivoluzionarono il\n                    modo di pensare. Questo periodo è chiamato <strong>Umanesimo</strong> perché mette al centro l'uomo\n                    e le sue capacità. Gli intellettuali ricominciarono a studiare con passione gli autori greci e\n                    romani, cercando di recuperare i loro testi originali senza gli errori dei copisti medievali. Questa\n                    disciplina è chiamata <span class=\"term\">filologia<span class=\"term-tooltip\">Una scienza che studia\n                            i testi antichi per capire esattamente cosa hanno scritto gli autori, eliminando gli errori\n                            fatti nel tempo da chi li ha copiati.</span></span>.</p>\n<div class=\"callout callout-gold\">\n<div class=\"callout-label\">💡 Concetto chiave</div>\n<p>L'uomo fu visto come <em>\"artefice del proprio destino\"</em>, capace di cambiare il mondo con\n                        l'intelligenza e il lavoro.</p>\n</div>\n<h3>Il Rinascimento nelle città italiane</h3>\n<p>Nelle città, specialmente in Italia, nacque il <strong>Rinascimento</strong>. I signori delle città\n                    (come i Medici a Firenze) diventarono <span class=\"term\">mecenati<span class=\"term-tooltip\">L'abitudine dei potenti di proteggere e pagare artisti e scrittori per\n                            abbellire le proprie corti e città.</span></span>, cioè diedero protezione e soldi ad\n                    artisti e scienziati per abbellire le città e i palazzi.</p>\n<p>In questo periodo:</p>\n<ul>\n<li>Fu inventata la <span class=\"term\">prospettiva<span class=\"term-tooltip\">Una tecnica matematica\n                                che permette di disegnare le cose su un piano facendole sembrare tridimensionali (con\n                                altezza, larghezza e profondità). Il suo inventore fu Filippo\n                                Brunelleschi.</span></span>, una tecnica matematica che permette di disegnare le cose su\n                        un piano facendole sembrare tridimensionali. Il suo inventore fu <strong>Filippo\n                            Brunelleschi</strong>, architetto e artista di Firenze.</li>\n<li>Furono progettate le <strong>\"città ideali\"</strong>, con strade larghe e ordinate per essere\n                        più belle e governabili.</li>\n</ul>",
+      "content": "<h3>Il pensiero umanistico</h3>\n<p class=\"drop-cap\">Mentre i re unificavano i territori, gli studiosi e gli artisti rivoluzionarono il\n                    modo di pensare. Questo periodo è chiamato <strong>Umanesimo</strong> perché mette al centro l'uomo\n                    e le sue capacità. Gli intellettuali ricominciarono a studiare con passione gli autori greci e\n                    romani, cercando di recuperare i loro testi originali senza gli errori dei copisti medievali. Questa\n                    disciplina è chiamata <span class=\"term\">filologia<span class=\"term-tooltip\">Una scienza che studia\n                            i testi antichi per capire esattamente cosa hanno scritto gli autori, eliminando gli errori\n                            fatti nel tempo da chi li ha copiati.</span></span>.</p>\n<div class=\"callout callout-gold\">\n<div class=\"callout-label\">💡 Concetto chiave</div>\n<p>L'uomo fu visto come <em>\"artefice del proprio destino\"</em>, capace di cambiare il mondo con\n                        l'intelligenza e il lavoro.</p>\n</div>\n<h3>Il Rinascimento nelle città italiane</h3>\n<p>Nelle città, specialmente in Italia, nacque il <strong>Rinascimento</strong>. I signori delle città\n                    (come i Medici a Firenze) diventarono <span class=\"term\">mecenati<span class=\"term-tooltip\">L'abitudine dei potenti di proteggere e pagare artisti e scrittori per\n                            abbellire le proprie corti e città.</span></span>, cioè diedero protezione e soldi ad\n                    artisti e scienziati per abbellire le città e i palazzi.</p>\n<p>In questo periodo:</p>\n<ul>\n<li>Fu inventata la <span class=\"term\">prospettiva<span class=\"term-tooltip\">Una tecnica matematica\n                                che permette di disegnare le cose su un piano facendole sembrare tridimensionali (con\n                                altezza, larghezza e profondità). Il suo inventore fu Filippo\n                                Brunelleschi.</span></span>, una tecnica matematica che permette di disegnare le cose su\n                        un piano facendole sembrare tridimensionali. Il suo inventore fu <strong>Filippo\n                            Brunelleschi</strong>, architetto e artista di Firenze.</li>\n<li>Furono progettate le <strong>\"città ideali\"</strong>, con strade larghe e ordinate per essere\n                        più belle e governabili.</li>\n</ul>\n<h3>Dall'Umanesimo al Rinascimento</h3>\n<p>Nel Trecento la cultura umanistica rimase d'<strong>élite</strong> e scritta soprattutto in <strong>latino</strong>. Nel Quattrocento coinvolse anche artisti e scienziati, che cominciarono a scrivere in <strong>volgare</strong>, dando origine al <strong>Rinascimento</strong>. Il termine fu coniato nel XIX secolo dagli storici <strong>Jacob Burckhardt</strong> e <strong>Jules Michelet</strong>.</p>\n<p>A favorire il Rinascimento fu la <strong>laicizzazione</strong>: l'idea che al centro del mondo non ci fosse più Dio, ma l'essere umano. I signori degli Stati regionali usarono il <strong>mecenatismo</strong> per legittimare il loro potere.</p>\n<h3>La città ideale e gli artisti</h3>\n<p><strong>Leon Battista Alberti</strong> compose il <em>De re aedificatoria</em> (1450 ca.), elaborando un modello di città ideale con strade larghe e armoniose. Firenze fu la \"culla\" del Rinascimento, con il Duomo sormontato dalla cupola di Brunelleschi.</p>\n<p>Tra i grandi artisti del periodo: <strong>Masaccio</strong>, <strong>Piero della Francesca</strong>, <strong>Botticelli</strong>, <strong>Raffaello</strong>, <strong>Michelangelo</strong> e <strong>Leonardo da Vinci</strong>, il vero \"uomo universale\" — matematico, fisico, pittore e architetto.</p>",
       "questions": {
         "open": "Qual è la differenza principale nel modo di pensare tra l'epoca medievale e l'Umanesimo?",
         "closed": "Chi inventò la prospettiva lineare a Firenze? (A: Leonardo da Vinci, B: Filippo Brunelleschi, C: Michelangelo)"
@@ -605,7 +681,7 @@
       "id": "s7",
       "number": "07",
       "title": "Firenze, i Medici e la Pace di Lodi",
-      "content": "<h3>La pace di Lodi (1454)</h3>\n<p>Nel <strong>1454</strong> fu firmata la <strong>pace di Lodi</strong>, che diede inizio a un periodo\n                    di pace in Italia durato circa 40 anni. Gli stati italiani promisero di non farsi più la guerra.</p>\n<h3>Lorenzo il Magnifico (1469–1492)</h3>\n<div class=\"persona-card\">\n<div class=\"persona-avatar\" style=\"background: var(--gold); color: var(--ink);\">LM</div>\n<div>\n<div class=\"persona-name\">Lorenzo de' Medici, \"il Magnifico\"</div>\n<div class=\"persona-role\">Signore di Firenze · 1469–1492</div>\n<p class=\"persona-desc\">Nel <strong>1469</strong> divenne il signore di Firenze insieme al\n                            fratello Giuliano. Fu un politico bravissimo e un grande amante dell'arte. Veniva chiamato\n                            <em>\"l'<span class=\"term\" style=\"display:inline-block; position:relative;\">ago della\n                                    bilancia<span class=\"term-tooltip\">Modo di dire per indicare qualcuno che riesce a\n                                        tenere in equilibrio due parti che litigano tra loro.</span></span>\"</em>:\n                            riusciva a far andare d'accordo i vari stati italiani, evitando guerre. Divenne protettore\n                            di artisti e poeti, incarnando pienamente il ruolo di mecenate rinascimentale.</p>\n</div>\n</div>\n<h3>La Congiura dei Pazzi (26 aprile 1478)</h3>\n<p>La famiglia Pazzi, rivale dei Medici e aiutata dal Papa, organizzò una <span class=\"term\">congiura<span class=\"term-tooltip\">Un piano segreto organizzato da più persone per\n                            danneggiare o uccidere qualcuno di potente.</span></span> per eliminare Lorenzo e suo\n                    fratello durante la messa in Duomo.</p>\n<div class=\"callout\">\n<div class=\"callout-label\">⚔️ 26 aprile 1478</div>\n<p>Avvenne l'agguato: <strong>Giuliano de' Medici</strong> fu ucciso, mentre Lorenzo si salvò. Dopo\n                        la congiura, Lorenzo rafforzò ancora di più il suo potere. La congiura scoppiò perché le altre\n                        famiglie di Firenze e il Papa temevano che i Medici stessero diventando troppo potenti.</p>\n</div>\n<h3>La crisi dell'equilibrio italiano</h3>\n<p>Nel <strong>1492</strong> morì Lorenzo il Magnifico e l'equilibrio politico in Italia entrò in crisi.\n                    Nel <strong>1494</strong> il re di Francia Carlo VIII scese in Italia con il suo esercito.</p>",
+      "content": "<h3>La pace di Lodi (1454)</h3>\n<p>Nel <strong>1454</strong> fu firmata la <strong>pace di Lodi</strong>, che diede inizio a un periodo\n                    di pace in Italia durato circa 40 anni. Gli stati italiani promisero di non farsi più la guerra. Si formò la <strong>Lega italica</strong>, un'alleanza tra Milano, Venezia, Firenze, lo Stato della Chiesa e il Regno di Napoli.</p>\n<h3>Lorenzo il Magnifico (1469–1492)</h3>\n<div class=\"persona-card\">\n<div class=\"persona-avatar\" style=\"background: var(--gold); color: var(--ink);\">LM</div>\n<div>\n<div class=\"persona-name\">Lorenzo de' Medici, \"il Magnifico\"</div>\n<div class=\"persona-role\">Signore di Firenze · 1469–1492</div>\n<p class=\"persona-desc\">Nel <strong>1469</strong> divenne il signore di Firenze insieme al\n                            fratello Giuliano. Fu un politico bravissimo e un grande amante dell'arte. Veniva chiamato\n                            <em>\"l'<span class=\"term\" style=\"display:inline-block; position:relative;\">ago della\n                                    bilancia<span class=\"term-tooltip\">Modo di dire per indicare qualcuno che riesce a\n                                        tenere in equilibrio due parti che litigano tra loro.</span></span>\"</em>:\n                            riusciva a far andare d'accordo i vari stati italiani, evitando guerre. Divenne protettore\n                            di artisti e poeti, incarnando pienamente il ruolo di mecenate rinascimentale.</p>\n</div>\n</div>\n<h3>La Congiura dei Pazzi (26 aprile 1478)</h3>\n<p>La famiglia Pazzi, rivale dei Medici e aiutata dal Papa, organizzò una <span class=\"term\">congiura<span class=\"term-tooltip\">Un piano segreto organizzato da più persone per\n                            danneggiare o uccidere qualcuno di potente.</span></span> per eliminare Lorenzo e suo\n                    fratello durante la messa in Duomo.</p>\n<div class=\"callout\">\n<div class=\"callout-label\">⚔️ 26 aprile 1478</div>\n<p>Avvenne l'agguato: <strong>Giuliano de' Medici</strong> fu ucciso, mentre Lorenzo si salvò. Dopo\n                        la congiura, Lorenzo rafforzò ancora di più il suo potere. La congiura scoppiò perché le altre\n                        famiglie di Firenze e il Papa temevano che i Medici stessero diventando troppo potenti.</p>\n</div>\n<h3>Le alleanze e la politica matrimoniale</h3>\n<p>Lorenzo consolidò il suo potere con una sapiente <strong>politica matrimoniale</strong>: sposò <strong>Clarice Orsini</strong> (potente famiglia romana), diede la figlia a un figlio del Papa, e fece eleggere <strong>cardinale</strong> il figlio <strong>Giovanni</strong>, destinato a diventare papa con il nome di <strong>Leone X</strong>.</p>\n<h3>La crisi dell'equilibrio italiano</h3>\n<p>Nel <strong>1492</strong> morì Lorenzo il Magnifico e l'equilibrio politico in Italia entrò in crisi.\n                    Nel <strong>1494</strong> il re di Francia Carlo VIII scese in Italia con il suo esercito.</p>",
       "questions": {
         "open": "Perché Lorenzo de' Medici era chiamato \"l'ago della bilancia\"?",
         "closed": "Quale evento avvenne il 26 aprile 1478 a Firenze? (A: Pace di Lodi, B: Congiura dei Pazzi, C: Discesa di Carlo VIII)"
@@ -615,7 +691,7 @@
       "id": "s8",
       "number": "08",
       "title": "Il Viaggio di Cristoforo Colombo e la Scoperta dell'America",
-      "content": "<h3>Il progetto di Colombo</h3>\n<p class=\"drop-cap\"><strong>Cristoforo Colombo</strong> era un marinaio di Genova convinto che la Terra\n                    fosse tonda e che si potesse arrivare in Oriente navigando nell'Atlantico. Il suo grande errore di\n                    calcolo fu pensare che il viaggio fosse molto più breve: stimava 5.000 km invece dei 20.000 km\n                    reali.</p>\n<p>Dopo il rifiuto del re del Portogallo, convinse i re di Spagna a pagargli il viaggio.</p>\n<h3>La partenza e l'arrivo (1492)</h3>\n<p>Il <strong>3 agosto 1492</strong> Colombo partì dal porto di Palos con tre navi: la <strong>Santa\n                        Maria</strong>, la <strong>Niña</strong> e la <strong>Pinta</strong>. Queste erano <span class=\"term\">caravelle<span class=\"term-tooltip\">Navi agili e veloci usate per i lunghi viaggi\n                            di esplorazione.</span></span>, navi agili e veloci usate per i lunghi viaggi di\n                    esplorazione.</p>\n<p>Il <strong>12 ottobre 1492</strong> Colombo sbarcò su un'isola dei Caraibi, convinto di essere in\n                    Asia. Non trovò le grandi ricchezze dell'Asia, ma portò in Spagna schiavi, pappagalli e cotone.</p>\n<p>Il <strong>settembre 1493</strong> Colombo tornò in Spagna dal suo primo viaggio.</p>\n<h3>Le ragioni delle esplorazioni</h3>\n<ul>\n<li>I Turchi avevano bloccato le strade sicure verso l'Asia, quindi gli europei dovevano trovare una\n                        nuova via via mare per andare a prendere oro e spezie</li>\n<li>Gli studiosi avevano capito che la Terra era una sfera</li>\n<li>Gli strumenti di navigazione erano migliorati, dando coraggio ai marinai per affrontare l'oceano\n                    </li>\n</ul>",
+      "content": "<h3>Il progetto di Colombo</h3>\n<p class=\"drop-cap\"><strong>Cristoforo Colombo</strong> era un marinaio di Genova convinto che la Terra\n                    fosse tonda e che si potesse arrivare in Oriente navigando nell'Atlantico. Il suo grande errore di\n                    calcolo fu pensare che il viaggio fosse molto più breve: stimava 5.000 km invece dei 20.000 km\n                    reali.</p>\n<p>Il suo progetto era basato sulle teorie del geografo fiorentino <strong>Paolo dal Pozzo Toscanelli</strong>. Il re del Portogallo <strong>Giovanni II</strong> rifiutò di finanziarlo, ma Colombo riuscì a convincere i sovrani di Spagna.</p>\n<h3>La partenza e l'arrivo (1492)</h3>\n<p>Il <strong>3 agosto 1492</strong> Colombo partì dal porto di Palos con tre navi: la <strong>Santa\n                        Maria</strong>, la <strong>Niña</strong> e la <strong>Pinta</strong>. Queste erano <span class=\"term\">caravelle<span class=\"term-tooltip\">Navi agili e veloci usate per i lunghi viaggi\n                            di esplorazione.</span></span>, navi agili e veloci usate per i lunghi viaggi di\n                    esplorazione.</p>\n<p>Il <strong>12 ottobre 1492</strong> Colombo sbarcò su un'isola dei Caraibi, convinto di essere in\n                    Asia. L'isola, chiamata dagli indigeni \"Guanahani\", fu ribattezzata <strong>\"San Salvador\"</strong>. Non trovò le grandi ricchezze dell'Asia, ma portò in Spagna schiavi, pappagalli e cotone.</p>\n<p>Il <strong>settembre 1493</strong> Colombo tornò in Spagna dal suo primo viaggio.</p>\n<h3>Le spedizioni successive</h3>\n<p>I sovrani finanziarono altre spedizioni. Nella seconda, Colombo partì con <strong>17 navi e 1500 uomini</strong>: non solo marinai, ma anche soldati, missionari e agricoltori con sementi e animali. Fu la <strong>prima migrazione di colonizzatori</strong>, che si insediarono con violenza nell'isola di <strong>Hispaniola</strong> (l'attuale Haiti).</p>\n<h3>Le ragioni delle esplorazioni</h3>\n<ul>\n<li>I Turchi avevano bloccato le strade sicure verso l'Asia, quindi gli europei dovevano trovare una\n                        nuova via via mare per andare a prendere oro e spezie</li>\n<li>Gli studiosi avevano capito che la Terra era una sfera</li>\n<li>Gli strumenti di navigazione erano migliorati, dando coraggio ai marinai per affrontare l'oceano\n                    </li>\n</ul>",
       "questions": {
         "open": "Quali erano le ragioni economiche e politiche alla base delle grandi esplorazioni marittime del XV secolo?",
         "closed": "Come si chiamavano le tre navi di Cristoforo Colombo? (A: Santa Maria, Niña, Pinta, B: Victoria, Trinidad, San Antonio, C: Mayflower, Speedwell, Discovery)"
@@ -625,7 +701,7 @@
       "id": "s9",
       "number": "09",
       "title": "Carlo V e il Sogno dell'Impero Universale",
-      "content": "<h3>L'eredità di Carlo V</h3>\n<p class=\"drop-cap\"><strong>Carlo V</strong> nacque nel <strong>1500</strong> e si ritrovò a comandare\n                    su un territorio gigantesco (Spagna, Italia, Germania e Americhe) grazie ai matrimoni dei suoi\n                    nonni. Non per merito suo, ma perché ereditò territori da tutti i suoi nonni (Spagna, Austria, Paesi\n                    Bassi).</p>\n<p>Nel <strong>1516</strong>, alla morte del nonno Ferdinando, Carlo ereditò il Regno di Spagna e i\n                    territori italiani. Nel <strong>1519</strong> Carlo V fu eletto <strong>Imperatore del Sacro Romano\n                        Impero</strong>.</p>\n<blockquote>\n                    Si diceva che nel suo impero <em>\"non tramontasse mai il sole\"</em> perché era così vasto che c'era\n                    sempre luce da qualche parte.\n                </blockquote>\n<p>Il suo regno terminò nel <strong>1555</strong>.</p>\n<h3>Il sogno fallito</h3>\n<p>Il sogno di Carlo V era ricostruire un impero cristiano unito, come quello di Carlo Magno. Il suo\n                    progetto fallì per due motivi:</p>\n<ul>\n<li>Le guerre con la Francia</li>\n<li>La protesta di Martin Lutero</li>\n</ul>",
+      "content": "<h3>L'eredità di Carlo V</h3>\n<p class=\"drop-cap\"><strong>Carlo V</strong> nacque nel <strong>1500</strong> e si ritrovò a comandare\n                    su un territorio gigantesco (Spagna, Italia, Germania e Americhe) grazie ai matrimoni dei suoi\n                    nonni. Non per merito suo, ma perché ereditò territori da tutti i suoi nonni (Spagna, Austria, Paesi\n                    Bassi).</p>\n<p>Nel <strong>1516</strong>, alla morte del nonno Ferdinando, Carlo ereditò il Regno di Spagna e i\n                    territori italiani. Nel <strong>1519</strong>, dopo la morte del nonno paterno Massimiliano I, Carlo ereditò anche i domini asburgici (Austria, Tirolo) e le Fiandre. Per ottenere il titolo imperiale, dovette battere la candidatura del re francese <strong>Francesco I</strong>, comprando i voti dei principi elettori con enormi prestiti dai banchieri <strong>Fugger</strong> di Augusta.</p>\n<blockquote>\n                    Si diceva che nel suo impero <em>\"non tramontasse mai il sole\"</em> perché era così vasto che c'era\n                    sempre luce da qualche parte.\n                </blockquote>\n<p>Il suo regno terminò nel <strong>1555</strong>.</p>\n<h3>Il sogno fallito: la <em>restauratio imperii</em></h3>\n<p>Animato da una profonda fede, Carlo V elaborò il progetto della <strong><em>restauratio imperii</em></strong>: ricreare un impero cristiano universale come quello di Carlo Magno, garante della pace e dell'unità cristiana contro eresie e Ottomani. Il suo\n                    progetto fallì per due motivi:</p>\n<ul>\n<li>Le guerre con la Francia</li>\n<li>La protesta di Martin Lutero</li>\n</ul>",
       "questions": {
         "open": "Perché si diceva che nel regno di Carlo V \"non tramontasse mai il sole\"?",
         "closed": "Quale dei seguenti territori NON faceva parte dell'impero di Carlo V? (A: Spagna, B: Germania, C: Inghilterra)"
@@ -635,7 +711,7 @@
       "id": "s10",
       "number": "10",
       "title": "La Riforma Protestante di Martin Lutero",
-      "content": "<h3>Le 95 tesi (31 ottobre 1517)</h3>\n<p class=\"drop-cap\">Il <strong>31 ottobre 1517</strong> <strong>Martin Lutero</strong>, un frate\n                    tedesco, pubblicò le sue <strong>95 tesi</strong> contro la Chiesa di Roma.</p>\n<p>Lutero si arrabbiò molto con la Chiesa di Roma. Attaccò la pratica delle <span class=\"term\">indulgenze<span class=\"term-tooltip\">La pratica di pagare la Chiesa per ottenere il\n                            perdono dei peccati ed evitare le pene dopo la morte.</span></span>: il pagamento di denaro\n                    alla Chiesa per ottenere il perdono dei peccati ed evitare le pene dopo la morte. Sostenne che solo\n                    Dio può perdonare i peccati, non i soldi o le opere buone dei preti.</p>\n<div class=\"callout\">\n<div class=\"callout-label\">⚡ Conseguenza storica</div>\n<p>La Chiesa di Roma era diventata troppo ricca e sembrava pensare più ai soldi e al potere che alla\n                        religione. Questo ha rotto per sempre l'unità della Chiesa.</p>\n</div>",
+      "content": "<h3>Le 95 tesi (31 ottobre 1517)</h3>\n<p class=\"drop-cap\">Il <strong>31 ottobre 1517</strong> <strong>Martin Lutero</strong>, un frate agostiniano e professore di Teologia biblica all'Università di <strong>Wittenberg</strong>, affisse alle porte della cattedrale un manifesto con <strong>95 tesi</strong> in latino contro la dottrina delle indulgenze.</p>\n<p>Lutero si arrabbiò molto con la Chiesa di Roma. Attaccò la pratica delle <span class=\"term\">indulgenze<span class=\"term-tooltip\">La pratica di pagare la Chiesa per ottenere il\n                            perdono dei peccati ed evitare le pene dopo la morte.</span></span>: il pagamento di denaro\n                    alla Chiesa per ottenere il perdono dei peccati ed evitare le pene dopo la morte. Sostenne che le cosiddette <strong>\"opere buone\"</strong> (carità, culto dei santi, reliquie) erano invenzioni umane non presenti nella Bibbia. Per Lutero, <strong>solo Dio può rimettere i peccati</strong>: la vita eterna non si può comprare e nessun intermediario può intercedere per essa.</p>\n<div class=\"callout\">\n<div class=\"callout-label\">⚡ Conseguenza storica</div>\n<p>La Chiesa di Roma era diventata troppo ricca e sembrava pensare più ai soldi e al potere che alla\n                        religione. Questo ha rotto per sempre l'unità della Chiesa.</p>\n</div>",
       "questions": {
         "open": "Perché Martin Lutero criticò duramente la pratica delle indulgenze?",
         "closed": "In quale data Martin Lutero pubblicò le sue 95 tesi? (A: 12 ottobre 1492, B: 31 ottobre 1517, C: 26 aprile 1478)"
@@ -714,6 +790,34 @@
     {
       "term": "Indulgenze",
       "def": "La pratica di pagare la Chiesa per ottenere il perdono dei peccati ed\n                            evitare le pene dopo la morte."
+    },
+    {
+      "term": "Stati Generali",
+      "def": "Assemblea francese (dal 1302) divisa in tre ordini: Clero (I stato), Nobiltà (II stato) e Popolo (III stato). Aveva funzione consultiva: il re la ascoltava ma decideva lui."
+    },
+    {
+      "term": "Magna Carta",
+      "def": "Documento del 1215 che il re d'Inghilterra Giovanni Senzaterra fu costretto a firmare, limitando il potere regio e garantendo diritti ai nobili. Base del futuro Parlamento."
+    },
+    {
+      "term": "Prammatica sanzione",
+      "def": "Provvedimento del 1438 che attribuiva al re di Francia il controllo sulle nomine di tutte le cariche ecclesiastiche, rafforzando il potere regio sulla Chiesa."
+    },
+    {
+      "term": "Lega italica",
+      "def": "Alleanza stipulata nel 1454 tra i principali Stati italiani (Milano, Venezia, Firenze, Stato della Chiesa, Napoli) per garantire la pace nella penisola."
+    },
+    {
+      "term": "Restauratio imperii",
+      "def": "Il progetto politico di Carlo V di ricreare un impero cristiano universale, sul modello di Carlo Magno, garante della pace e dell'unità religiosa europea."
+    },
+    {
+      "term": "Gentry",
+      "def": "La piccola e media nobiltà inglese che, insieme alla borghesia, acquisì potere dopo la Guerra delle Due Rose a scapito dell'alta aristocrazia."
+    },
+    {
+      "term": "Fugger",
+      "def": "Potente famiglia di banchieri di Augusta (Germania) che finanziò Carlo V per l'acquisto dei voti dei principi elettori durante l'elezione imperiale del 1519."
     }
   ],
   "quiz": [
@@ -1135,7 +1239,7 @@
             return `
             <div class="map-container">
                 <img src="assets/maps/${imageName}" alt="${label}" class="map-img">
-                <div style="font-size:0.85rem; color:var(--ink-light); margin-top:0.8rem; font-style:italic;">${label}</div>
+                <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.8rem; font-style:italic;">${label}</div>
             </div>`;
         }
 
@@ -1338,25 +1442,7 @@
             container.innerHTML = html || '<p style="color:var(--text-muted)">Nessun evento in questo secolo.</p>';
         }
 
-        function renderGlossary(searchQuery = '') {
-            const container = document.getElementById('glossary-grid');
-            let html = '';
-            const query = searchQuery.toLowerCase();
-            
-            AppData.glossary.forEach(item => {
-                if(item.term.toLowerCase().includes(query) || item.def.toLowerCase().includes(query)) {
-                    html += `
-                    <div class="flashcard" onclick="this.classList.toggle('flipped')">
-                        <div class="flashcard-inner">
-                            <div class="flashcard-front">${item.term}</div>
-                            <div class="flashcard-back">${item.def}</div>
-                        </div>
-                    </div>`;
-                }
-            });
-            
-            container.innerHTML = html || '<p style="color:var(--text-muted); grid-column: 1/-1;">Nessun termine trovato.</p>';
-        }
+        // Glossary removed per user request
 
         function setupAccessibility() {
             const btnTheme = document.getElementById('toggle-theme');
@@ -1441,14 +1527,20 @@
                 });
             });
             
-            document.getElementById('glossary-search').addEventListener('input', (e) => {
-                renderGlossary(e.target.value);
+            // Timeline toggle
+            document.getElementById('timelineToggle').addEventListener('click', () => {
+                const btn = document.getElementById('timelineToggle');
+                const col = document.getElementById('timelineCollapsible');
+                btn.classList.toggle('open');
+                col.classList.toggle('open');
+                btn.innerHTML = col.classList.contains('open') 
+                    ? '<span class="arrow">▼</span> Nascondi Linea Temporale' 
+                    : '<span class="arrow">▼</span> Mostra Linea Temporale';
             });
             
             document.getElementById('global-search').addEventListener('input', (e) => {
                 const q = e.target.value;
                 renderChapters(q);
-                renderGlossary(q);
                 
                 // Re-observe newly rendered chapters for scroll animations
                 const obs = new IntersectionObserver(entries => {
@@ -1463,7 +1555,6 @@
             renderNav();
             renderChapters();
             renderTimeline();
-            renderGlossary();
             renderRipassoQuestions();
             renderQuiz();
             
@@ -1478,7 +1569,7 @@
                     e.preventDefault();
                     const target = document.querySelector(a.getAttribute('href'));
                     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    if (window.innerWidth < 900) document.getElementById('sidebar').classList.remove('open');
+                    if (window.innerWidth < 1000) closeSidebar();
                 });
             });
             
